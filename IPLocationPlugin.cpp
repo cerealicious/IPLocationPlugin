@@ -115,7 +115,7 @@ void CIPLocationPlugin::DataRequired()
                 location = m_nextCountry;
 
             if (!location.empty())
-                m_tooltip += L"\r\n地区: " + location;
+                m_tooltip += L"\r\nRegion: " + location;
         }
         else
         {
@@ -272,7 +272,7 @@ void CIPLocationPlugin::UpdateData()
 
     if (!ip.empty() && country.empty())
     {
-        auto geo = NetworkHelper::HttpGet(L"http://ip-api.com/json/" + ip + L"?fields=status,message,country,countryCode,query&lang=zh-CN", 8000);
+        auto geo = NetworkHelper::HttpGet(L"http://ip-api.com/json/" + ip + L"?fields=status,message,country,countryCode,query&lang=en-US", 8000);
         if (!geo.body.empty())
         {
             try
