@@ -64,7 +64,6 @@ CIPLocationPlugin::CIPLocationPlugin()
     m_copyright = L"";
     m_version = L"1.0";
     m_url = L"https://iplark.com";
-
     m_wakeEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
     StartUpdateThread();
 }
@@ -75,7 +74,6 @@ CIPLocationPlugin::~CIPLocationPlugin()
     SignalWake();
     if (m_updateThread.joinable())
         m_updateThread.join();
-
     if (m_wakeEvent)
     {
         CloseHandle(m_wakeEvent);
@@ -95,7 +93,6 @@ IPluginItem* CIPLocationPlugin::GetItem(int index)
     return nullptr;
 }
 
-void CIPLocationPlugin::DataRequired()
 void CIPLocationPlugin::DataRequired()
 {
     // Check if new data is available
@@ -166,7 +163,6 @@ void CIPLocationPlugin::StartUpdateThread()
                 if (m_wakeEvent)
                     ResetEvent(m_wakeEvent);
             }
-
             UpdateData();
         }
     });
@@ -187,13 +183,7 @@ void CIPLocationPlugin::UpdateData()
 {
     if (m_isUpdating.exchange(true))
         return; // Already updating
-        
-    // Fetch data
-    // Update status if needed
-    // But m_item is not thread safe, so we can't call SetStatus from here directly
-    // unless we make SetStatus thread safe or use m_nextStatus logic.
-    // For simplicity, we just fetch data.
-    
+
     std::wstring ip;
     std::wstring country;
     std::wstring region;
@@ -250,7 +240,6 @@ void CIPLocationPlugin::UpdateData()
                 std::regex regionRe("\\\"region\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"");
                 std::regex cityRe("\\\"city\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"");
                 std::smatch m;
-
                 if (std::regex_search(ipwho.body, m, countryRe) && m.size() > 1)
                     country = NetworkHelper::Utf8ToWString(m[1].str());
                 if (std::regex_search(ipwho.body, m, regionRe) && m.size() > 1)
@@ -280,7 +269,7 @@ void CIPLocationPlugin::UpdateData()
 
     if (ip.empty() && status.empty())
         status = L"Fetch failed";
-    
+
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_nextIP = ip;
@@ -290,7 +279,6 @@ void CIPLocationPlugin::UpdateData()
         m_nextStatus = status;
         m_newDataReady = true;
     }
-    
     m_isUpdating = false;
 }
 
